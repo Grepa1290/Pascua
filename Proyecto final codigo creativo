@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flor de Pascua con Copos de Nieve</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <script>
+    let flowers = [];
+    let numFlowers = 10;
+
+    function setup() {
+      createCanvas(windowWidth, windowHeight);
+      for (let i = 0; i < numFlowers; i++) {
+        flowers.push(new Flower(random(width), random(-height, 0)));
+      }
+    }
+
+    class Flower {
+      constructor(x, y) {
+        this.position = createVector(x, y);
+        this.velocity = createVector(0, random(1, 3)); // Velocidad vertical aleatoria
+        this.size = random(0.5, 1.5); // Tamaños variados
+      }
+
+      update() {
+        this.position.add(this.velocity);
+        // Reaparecer en la parte superior si se sale por la parte inferior
+        if (this.position.y > height) {
+          this.position.y = random(-50, 0);
+          this.position.x = random(width);
+        }
+      }
+
+      show() {
+        drawPoinsettia(this.position.x, this.position.y, this.size);
+      }
+    }
+
+    function drawPetal(x, y, width, height, angle, color) {
+      push();
+      translate(x, y);
+      rotate(angle);
+      fill(color);
+      noStroke();
+      beginShape(TRIANGLE_STRIP);
+      vertex(0, 0);
+      vertex(width / 2, -height / 2);
+      vertex(width / 2, height / 2);
+      vertex(0, height);
+      vertex(-width / 2, height / 2);
+      vertex(-width / 2, -height / 2);
+      vertex(0, 0);
+      endShape(CLOSE);
+      pop();
+    }
+
+    function drawPoinsettia(x, y, size) {
+      const petalWidth = 60 * size;
+      const petalHeight = 160 * size;
+      const colors = ['#E51A1A', '#B51717', '#FF2222'];
+
+      // Dibujar hojas exteriores
+      for (let i = 0; i < 12; i++) {
+        const angle = (i * PI) / 6;
+        drawPetal(x, y, petalWidth + 40, petalHeight + 40, angle, '#007f0e'); // Hojas verdes
+      }
+
+      // Dibujar pétalos
+      for (let i = 0; i < 12; i++) {
+        const angle = (i * PI) / 6;
+        drawPetal(x, y, petalWidth, petalHeight, angle, colors[i % 3]);
+      }
+
+      // Dibujar el centro de la flor
+      fill('#FFDD55');
+      noStroke();
+      ellipse(x, y, 40 * size, 40 * size);
+    }
+
+    function draw() {
+      background(0); // Fondo negro
+      flowers.forEach(flower => {
+        flower.update();
+        flower.show();
+      });
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+    }
+  </script>
+</body>
+</html>
